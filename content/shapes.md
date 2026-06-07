@@ -1,5 +1,5 @@
 ## Fragment Selector Shapes
 {:#shapes}
 
-Write me
+Introduce as a way to define $$ l $$
 {:.todo}

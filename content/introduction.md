@@ -11,7 +11,7 @@ these alternative interfaces introduce different trade-offs between server and c
 For this reason, these interfaces can be compared to each other using the *Linked Data Fragments* axis,
 and these interfaces are hence often referred to as Linked Data Framents (LDFs).
 
-Figure for LDF axis?
+Figure for LDF axis
 {:.todo}
 
 While each LDF interface comes with its own client-side algorithm to query full SPARQL queries over it,
@@ -43,5 +43,5 @@ after which we provide a query decomposition algorithm
 that can be used during source selection over federations of heterogeneous interfaces.
 Finally, we conclude with next steps for future work.
 
-Add motivating example?
+Add motivating example (see preliminaries reference)
 {:.todo}
