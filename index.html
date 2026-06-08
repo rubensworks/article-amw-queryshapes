@@ -89,10 +89,15 @@ For this reason, alternative interfaces <span class="references">[<a href="#ref
 to publish Knowledge Graphs.
 In contrast to SPARQL endpoints where clients simply send a SPARQL query to the endpoint and servers carry out all of the effort in query execution,
 these alternative interfaces introduce different trade-offs between server and client effort.
-For this reason, these interfaces can be compared to each other using the <em>Linked Data Fragments</em> axis,
-and these interfaces are hence often referred to as Linked Data Framents (LDFs).</p>
+For this reason, these interfaces can be compared to each other using the <em>Linked Data Fragments</em> axis as shown in <a href="#ldf-axis">Fig. 1</a>,
+and these interfaces are hence often referred to as Linked Data Fragments (LDFs).</p>
 
-        <p class="todo">Figure for LDF axis</p>
+        <figure id="ldf-axis">
+<img src="img/ldf.svg" alt="Linked Data Fragments Axis" />
+<figcaption>
+            <p><span class="label">Fig. 1:</span> The Linked Data Fragments axis shows the trade-offs between server-side and client-side effort for SPARQL query execution with different approaches.</p>
+          </figcaption>
+</figure>
 
         <p>While each LDF interface comes with its own client-side algorithm to query full SPARQL queries over it,
 federated querying over multiple instances of this LDF interface is only introduced for some.
