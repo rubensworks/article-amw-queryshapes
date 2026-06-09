@@ -31,7 +31,7 @@ Then, [a cost model](cite:cites heterogeneous_costmodel) was introduced that cap
 
 What is common among all these works, is that they make the assumption of prior knowledge as to what the expressivity of each federation member is.
 For example, if one federation member is a [TPF server](cite:cites tpf), it is assumed to accept only triple pattern queries,
-or if another federation member is a [brTPF server](cite:cites brtpf)...
+or if another federation member is a [brTPF server](cite:cites brtpf), it is assumed to accept triple pattern queries with optional `VALUES` bindings.
 This means that heterogeneous federation engines must have prior knowledge as to which LDF type maps to which *language* or level of expressivity.
 As a consequence, LDF interface types that are unknown and not part of this prior type-to-language mapping,
 would not be queryable by this federation engine until support for it was added manually by adding new code.
@@ -45,13 +45,11 @@ While this is the first publication that talks about FSSs,
 they have already been in use for several years within the Comunica query engine (since version 3.0.0, March 2024)
 to enable interface-aware query decomposition.
 As such, the approach has undergone several iterations based on implementation experience, practical usage, and performance analyses.
-The goal of this article is to summarize the findings of this end result.
+The goal of this article is to formalize the findings of this end result.
 
-In the next section, we introduce the necessary preliminaries onto which FSSL will be based.
+In the next section, we introduce a motivating example,
+followed by the necessary preliminaries onto which FSSL will be based.
 Next, we introduce FSSL formally,
 after which we provide a query decomposition algorithm
 that can be used during source selection over federations of heterogeneous interfaces.
 Finally, we conclude with next steps for future work.
-
-Add motivating example (see preliminaries reference)
-{:.todo}

@@ -1,0 +1,24 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+
+SELECT * WHERE {
+  SERVICE <https:/​/​query.wikidata.org/sparql> {
+    ?x wdt:P39 wd:Q11696 .            # tp1
+    ?x wdt:P102 ?party .              # tp2
+  }
+  {
+    SERVICE <https:/​/​query.wikidata.org/sparql> {
+      ?y owl:sameAs ?x .                # tp3
+    }
+  } UNION {
+    SERVICE <http:/​/​fragments.dbpedia.org/2016-04/en> {
+      ?y owl:sameAs ?x .                # tp3
+    }
+  }
+  SERVICE <http:/​/​fragments.dbpedia.org/2016-04/en> {
+    ?y dbo:predecessor ?predecessor . # tp4
+    ?y dbo:successor ?successor .     # tp5
+  }
+}

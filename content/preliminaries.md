@@ -1,9 +1,6 @@
 ## Preliminaries
 {:#preliminaries}
 
-Write me: RDF/SPARQL (reuse from my link traversal paper), FedQPL, heterogeneous_lars
-{:.todo}
-
 Hereafter, we summarize the semantics of [SPARQL in the context of RDF](cite:cites sparqlsemantics),
 and include the relevant definitions and notations from [FedQPL](cite:cites heterogeneous_fedqpl) and [Heling et al](cite:cites heterogeneous_lars).
 
@@ -38,7 +35,7 @@ where $$ C = {c_1, ... , c_n } \subset U $$ , a set of URIs for LDF services,
 $$ int $$, a function that maps an LDF service to its interface,
 and $$ ep $$, a function that maps each LDF service to the RDF dataset available at that service.
 
-Using this notation, our motivating example can be expressed as $$ F_{ex} = ({c_1, c_2 }, int, ep) $$,
+Using this notation, our motivating example from [](#example) can be expressed as $$ F_{ex} = ({c_1, c_2 }, int, ep) $$,
 with $$ c_1 = \text{https://query.wikidata.org/sparql} $$,
 $$ c_2 = \text{http://fragments.dbpedia.org/2016-04/en} $$,
 $$ int(c_1) = (l_{SPARQL12}, m_{SPARQLEP}) $$,
