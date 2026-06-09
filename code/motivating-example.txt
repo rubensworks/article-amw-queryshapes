@@ -1,0 +1,12 @@
+PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+
+SELECT * WHERE {
+  ?x wdt:P39 wd:Q11696 .            # tp1
+  ?x wdt:P102 ?party .              # tp2
+  ?y owl:sameAs ?x .                # tp3
+  ?y dbo:predecessor ?predecessor . # tp4
+  ?y dbo:successor ?successor .     # tp5
+}

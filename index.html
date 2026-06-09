@@ -10,7 +10,7 @@
   <meta name="citation_title" content="Fragment Selector Shapes: Expressing Heterogeneous Linked Data Fragments Capabilities to enable Assumption-less Discovery">
   <meta name="citation_author" content="Ruben Taelman" />
   
-  <meta name="citation_publication_date" content="2026/06/08" />
+  <meta name="citation_publication_date" content="2026/06/09" />
 </head>
 
 <body prefix="dctypes: http://purl.org/dc/dcmitype/ pimspace: http://www.w3.org/ns/pim/space# rsa: http://www.w3.org/ns/auth/rsa# cert: http://www.w3.org/ns/auth/cert# wgs: http://www.w3.org/2003/01/geo/wgs84_pos# biblio: http://purl.org/net/biblio# bibo: http://purl.org/ontology/bibo/ book: http://purl.org/NET/book/vocab# ov: http://open.vocab.org/terms/ doap: http://usefulinc.com/ns/doap# dbr: http://dbpedia.org/resource/ dbp: http://dbpedia.org/property/ sio: http://semanticscience.org/resource/ opmw: http://www.opmw.org/ontology/ deo: http://purl.org/spar/deo/ doco: http://purl.org/spar/doco/ cito: http://purl.org/spar/cito/ fabio: http://purl.org/spar/fabio/ solid: http://www.w3.org/ns/solid/terms# acl: http://www.w3.org/ns/auth/acl# dio: https://w3id.org/dio# lsc: http://linkedscience.org/lsc/ns#" typeof="schema:CreativeWork sioc:Post prov:Entity lsc:Research">
@@ -112,7 +112,7 @@ Then, a cost model <span class="references">[<a href="#ref-18">18</a>]</span> w
 
         <p>What is common among all these works, is that they make the assumption of prior knowledge as to what the expressivity of each federation member is.
 For example, if one federation member is a TPF server <span class="references">[<a href="#ref-4">4</a>]</span>, it is assumed to accept only triple pattern queries,
-or if another federation member is a brTPF server <span class="references">[<a href="#ref-8">8</a>]</span>…
+or if another federation member is a brTPF server <span class="references">[<a href="#ref-8">8</a>]</span>, it is assumed to accept triple pattern queries with optional <code>VALUES</code> bindings.
 This means that heterogeneous federation engines must have prior knowledge as to which LDF type maps to which <em>language</em> or level of expressivity.
 As a consequence, LDF interface types that are unknown and not part of this prior type-to-language mapping,
 would not be queryable by this federation engine until support for it was added manually by adding new code.</p>
@@ -126,15 +126,129 @@ While this is the first publication that talks about FSSs,
 they have already been in use for several years within the Comunica query engine (since version 3.0.0, March 2024)
 to enable interface-aware query decomposition.
 As such, the approach has undergone several iterations based on implementation experience, practical usage, and performance analyses.
-The goal of this article is to summarize the findings of this end result.</p>
+The goal of this article is to formalize the findings of this end result.</p>
 
-        <p>In the next section, we introduce the necessary preliminaries onto which FSSL will be based.
+        <p>In the next section, we introduce a motivating example,
+followed by the necessary preliminaries onto which FSSL will be based.
 Next, we introduce FSSL formally,
 after which we provide a query decomposition algorithm
 that can be used during source selection over federations of heterogeneous interfaces.
 Finally, we conclude with next steps for future work.</p>
 
-        <p class="todo">Add motivating example (see preliminaries reference)</p>
+      </div>
+</section>
+
+  <section id="example" inlist="" rel="schema:hasPart" resource="#example">
+<div datatype="rdf:HTML" property="schema:description">
+        <h2 property="schema:name">Motivating Example</h2>
+
+        <p>Hereafter, we introduce a motivating example, which we reuse from Heling et al <span class="references">[<a href="#ref-16">16</a>]</span>.
+Concretely, the federated SPARQL query in <a href="#motivating-example">Listing 1</a> retrieves <em>all American presidents with their political party, including the predecessors and successors</em>.</p>
+
+        <figure id="motivating-example" class="listing">
+<pre><code>PREFIX wd: &lt;http://www.wikidata.org/entity/&gt;
+</code><code>PREFIX wdt: &lt;http://www.wikidata.org/prop/direct/&gt;
+</code><code>PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;
+</code><code>PREFIX dbo: &lt;http://dbpedia.org/ontology/&gt;
+</code><code>
+</code><code>SELECT * WHERE {
+</code><code>  ?x wdt:P39 wd:Q11696 .            # tp1
+</code><code>  ?x wdt:P102 ?party .              # tp2
+</code><code>  ?y owl:sameAs ?x .                # tp3
+</code><code>  ?y dbo:predecessor ?predecessor . # tp4
+</code><code>  ?y dbo:successor ?successor .     # tp5
+</code><code>}</code></pre>
+<figcaption>
+            <p><span class="label">Listing 1:</span> A federated SPARQL query over Wikidata and DBpedia to retrieve all American presidents with their political party, including the predecessors and successors.</p>
+          </figcaption>
+</figure>
+
+        <p>In this example, we assume that we want to execute this SPARQL query over Wikidata and DBpedia,
+for which we want to use the public <a href="https://query.wikidata.org/sparql" class="mandatory" data-link-text="https:/​/​query.wikidata.org/​sparql">Wikidata SPARQL endpoint</a> and the public <a href="http://fragments.dbpedia.org/2016-04/en" class="mandatory" data-link-text="http:/​/​fragments.dbpedia.org/​2016-​04/​en">DBpedia Triple Pattern Fragments interface</a>.
+While the Wikidata SPARQL endpoint accepts full SPARQL queries,
+the DBpedia Triple Pattern Fragments interface only accepts triple pattern queries.
+As such, the query is to be decomposed in an interface-aware manner.
+In this example, Wikidata produces results for <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">tp1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">1</span></span></span></span>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">tp2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">2</span></span></span></span>, and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">tp3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">3</span></span></span></span>,
+while DBpedia produces results for <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">tp3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">3</span></span></span></span>, <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>4</mn></mrow><annotation encoding="application/x-tex">tp4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">4</span></span></span></span>, and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>5</mn></mrow><annotation encoding="application/x-tex">tp5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">5</span></span></span></span>.</p>
+
+        <p>Interface-agnostic approaches such as FedX <span class="references">[<a href="#ref-10">10</a>]</span> would decompose this query
+in such a way that <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">tp1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">1</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">tp2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">2</span></span></span></span> are sent exclusively to Wikidata,
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>4</mn></mrow><annotation encoding="application/x-tex">tp4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">4</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>5</mn></mrow><annotation encoding="application/x-tex">tp5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">5</span></span></span></span> exclusively to DBpedia,
+and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>3</mn></mrow><annotation encoding="application/x-tex">tp3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">3</span></span></span></span> is sent to both Wikidata and DBpedia before being unioned.
+The result of this source selection phase can be seen in <a href="#motivating-example-service">Listing 2</a></p>
+
+        <figure id="motivating-example-service" class="listing">
+<pre><code>PREFIX wd: &lt;http://www.wikidata.org/entity/&gt;
+</code><code>PREFIX wdt: &lt;http://www.wikidata.org/prop/direct/&gt;
+</code><code>PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;
+</code><code>PREFIX dbo: &lt;http://dbpedia.org/ontology/&gt;
+</code><code>
+</code><code>SELECT * WHERE {
+</code><code>  SERVICE &lt;https:/​/​query.wikidata.org/sparql&gt; {
+</code><code>    ?x wdt:P39 wd:Q11696 .            # tp1
+</code><code>    ?x wdt:P102 ?party .              # tp2
+</code><code>  }
+</code><code>  {
+</code><code>    SERVICE &lt;https:/​/​query.wikidata.org/sparql&gt; {
+</code><code>      ?y owl:sameAs ?x .                # tp3
+</code><code>    }
+</code><code>  } UNION {
+</code><code>    SERVICE &lt;http:/​/​fragments.dbpedia.org/2016-04/en&gt; {
+</code><code>      ?y owl:sameAs ?x .                # tp3
+</code><code>    }
+</code><code>  }
+</code><code>  SERVICE &lt;http:/​/​fragments.dbpedia.org/2016-04/en&gt; {
+</code><code>    ?y dbo:predecessor ?predecessor . # tp4
+</code><code>    ?y dbo:successor ?successor .     # tp5
+</code><code>  }
+</code><code>}</code></pre>
+<figcaption>
+            <p><span class="label">Listing 2:</span> The federated query from <a href="#motivating-example">Listing 1</a> after query decomposition with FedX.</p>
+          </figcaption>
+</figure>
+
+        <p>Due to FedX being interface-agnostic, the query in <a href="#motivating-example-service">Listing 2</a> can not be executed.
+Concretely, the problem is that a join of two triple patterns is being sent to the DBpedia Triple Pattern Fragments interface,
+while this interface can only accept triple pattern queries.
+As such, this query should be decomposed in a slightly different manner,
+where <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>4</mn></mrow><annotation encoding="application/x-tex">tp4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">4</span></span></span></span> and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mi>p</mi><mn>5</mn></mrow><annotation encoding="application/x-tex">tp5</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">tp</span><span class="mord">5</span></span></span></span> are sent separately to DBpedia,
+and their join is executed within the federation engine.
+This is exactly what approaches such as the one from Heling et al. <span class="references">[<a href="#ref-16">16</a>]</span> can achieve,
+as shown in <a href="#motivating-example-service-correct">Listing 3</a>.
+While existing query decomposition approaches assume prior knowledge of the language of each interface,
+our contribution focuses on query decomposition based on generic <em>Fragment Selector Shapes</em> (FSSs) that are announced by servers.</p>
+
+        <figure id="motivating-example-service-correct" class="listing">
+<pre><code>PREFIX wd: &lt;http://www.wikidata.org/entity/&gt;
+</code><code>PREFIX wdt: &lt;http://www.wikidata.org/prop/direct/&gt;
+</code><code>PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;
+</code><code>PREFIX dbo: &lt;http://dbpedia.org/ontology/&gt;
+</code><code>
+</code><code>SELECT * WHERE {
+</code><code>  SERVICE &lt;https:/​/​query.wikidata.org/sparql&gt; {
+</code><code>    ?x wdt:P39 wd:Q11696 .            # tp1
+</code><code>    ?x wdt:P102 ?party .              # tp2
+</code><code>  }
+</code><code>  {
+</code><code>    SERVICE &lt;https:/​/​query.wikidata.org/sparql&gt; {
+</code><code>      ?y owl:sameAs ?x .                # tp3
+</code><code>    }
+</code><code>  } UNION {
+</code><code>    SERVICE &lt;http:/​/​fragments.dbpedia.org/2016-04/en&gt; {
+</code><code>      ?y owl:sameAs ?x .                # tp3
+</code><code>    }
+</code><code>  }
+</code><code>  SERVICE &lt;http:/​/​fragments.dbpedia.org/2016-04/en&gt; {
+</code><code>    ?y dbo:predecessor ?predecessor . # tp4
+</code><code>  }
+</code><code>  SERVICE &lt;http:/​/​fragments.dbpedia.org/2016-04/en&gt; {
+</code><code>    ?y dbo:successor ?successor .     # tp5
+</code><code>  }
+</code><code>}</code></pre>
+<figcaption>
+            <p><span class="label">Listing 3:</span> The federated query from <a href="#motivating-example">Listing 1</a> after interface-aware query decomposition with the approach from Heling et al <span class="references">[<a href="#ref-16">16</a>]</span>.</p>
+          </figcaption>
+</figure>
 
       </div>
 </section>
@@ -142,8 +256,6 @@ Finally, we conclude with next steps for future work.</p>
   <section id="preliminaries" inlist="" rel="schema:hasPart" resource="#preliminaries">
 <div datatype="rdf:HTML" property="schema:description">
         <h2 property="schema:name">Preliminaries</h2>
-
-        <p class="todo">Write me: RDF/SPARQL (reuse from my link traversal paper), FedQPL, heterogeneous_lars</p>
 
         <p>Hereafter, we summarize the semantics of SPARQL in the context of RDF <span class="references">[<a href="#ref-19">19</a>]</span>,
 and include the relevant definitions and notations from FedQPL <span class="references">[<a href="#ref-15">15</a>]</span> and Heling et al <span class="references">[<a href="#ref-16">16</a>]</span>.</p>
@@ -179,7 +291,7 @@ where <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.
 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mi>n</mi><mi>t</mi></mrow><annotation encoding="application/x-tex">int</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6595em;"></span><span class="mord mathnormal">in</span><span class="mord mathnormal">t</span></span></span></span>, a function that maps an LDF service to its interface,
 and <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>e</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">ep</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">e</span><span class="mord mathnormal">p</span></span></span></span>, a function that maps each LDF service to the RDF dataset available at that service.</p>
 
-        <p>Using this notation, our motivating example can be expressed as <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mrow><mi>e</mi><mi>x</mi></mrow></msub><mo>=</mo><mo stretchy="false">(</mo><mrow><msub><mi>c</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>c</mi><mn>2</mn></msub></mrow><mo separator="true">,</mo><mi>i</mi><mi>n</mi><mi>t</mi><mo separator="true">,</mo><mi>e</mi><mi>p</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">F_{ex} = ({c_1, c_2 }, int, ep)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">x</span></span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">in</span><span class="mord mathnormal">t</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">e</span><span class="mord mathnormal">p</span><span class="mclose">)</span></span></span></span>,
+        <p>Using this notation, our motivating example from <a href="#example">Section 2</a> can be expressed as <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mrow><mi>e</mi><mi>x</mi></mrow></msub><mo>=</mo><mo stretchy="false">(</mo><mrow><msub><mi>c</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>c</mi><mn>2</mn></msub></mrow><mo separator="true">,</mo><mi>i</mi><mi>n</mi><mi>t</mi><mo separator="true">,</mo><mi>e</mi><mi>p</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">F_{ex} = ({c_1, c_2 }, int, ep)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.1389em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.1514em;"><span style="top:-2.55em;margin-left:-0.1389em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">e</span><span class="mord mathnormal mtight">x</span></span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">in</span><span class="mord mathnormal">t</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord mathnormal">e</span><span class="mord mathnormal">p</span><span class="mclose">)</span></span></span></span>,
 with <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mn>1</mn></msub><mo>=</mo><mtext>https:/​/​query.wikidata.org/sparql</mtext></mrow><annotation encoding="application/x-tex">c_1 = \text{https://query.wikidata.org/sparql}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">https:/​/​query.wikidata.org/sparql</span></span></span></span></span>,
 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mn>2</mn></msub><mo>=</mo><mtext>http:/​/​fragments.dbpedia.org/2016-04/en</mtext></mrow><annotation encoding="application/x-tex">c_2 = \text{http://fragments.dbpedia.org/2016-04/en}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">http:/​/​fragments.dbpedia.org/2016-04/en</span></span></span></span></span>,
 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mi>n</mi><mi>t</mi><mo stretchy="false">(</mo><msub><mi>c</mi><mn>1</mn></msub><mo stretchy="false">)</mo><mo>=</mo><mo stretchy="false">(</mo><msub><mi>l</mi><mrow><mi>S</mi><mi>P</mi><mi>A</mi><mi>R</mi><mi>Q</mi><mi>L</mi><mn>12</mn></mrow></msub><mo separator="true">,</mo><msub><mi>m</mi><mrow><mi>S</mi><mi>P</mi><mi>A</mi><mi>R</mi><mi>Q</mi><mi>L</mi><mi>E</mi><mi>P</mi></mrow></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">int(c_1) = (l_{SPARQL12}, m_{SPARQLEP})</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">in</span><span class="mord mathnormal">t</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1.0361em;vertical-align:-0.2861em;"></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0197em;">l</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:-0.0197em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0576em;">S</span><span class="mord mathnormal mtight" style="margin-right:0.1389em;">P</span><span class="mord mathnormal mtight">A</span><span class="mord mathnormal mtight" style="margin-right:0.0077em;">R</span><span class="mord mathnormal mtight">Q</span><span class="mord mathnormal mtight">L</span><span class="mord mtight">12</span></span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3283em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.0576em;">S</span><span class="mord mathnormal mtight" style="margin-right:0.1389em;">P</span><span class="mord mathnormal mtight">A</span><span class="mord mathnormal mtight" style="margin-right:0.0077em;">R</span><span class="mord mathnormal mtight">Q</span><span class="mord mathnormal mtight">L</span><span class="mord mathnormal mtight" style="margin-right:0.0576em;">E</span><span class="mord mathnormal mtight" style="margin-right:0.1389em;">P</span></span></span></span></span><span class="vlist-s">&#x200b;</span></span><span class="vlist-r"><span class="vlist" style="height:0.2861em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>,
@@ -201,11 +313,11 @@ Also add stuff from https://comunica.dev/blog/2024-03-19-release_3_0/</p>
       </div>
 </section>
 
-  <section id="implementation" inlist="" rel="schema:hasPart" resource="#implementation">
+  <section id="querydecomposition" inlist="" rel="schema:hasPart" resource="#querydecomposition">
 <div datatype="rdf:HTML" property="schema:description">
-        <h2 property="schema:name">Implementation</h2>
+        <h2 property="schema:name">Query Decomposition</h2>
 
-        <p class="todo">Write me; implementation experience and findings</p>
+        <p class="todo">Write me; Explain the different optimization steps in comunica in relation to the query shape usage; also implementation experience and findings</p>
 
       </div>
 </section>
