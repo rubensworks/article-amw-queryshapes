@@ -1,6 +1,8 @@
 ## Outlook
 {:#conclusions}
 
-Write me; and mainly focus on what we want to do in future work
-Also say that this solves the problem described in [my earlier paper](cite:cites taelman_kcap_2017)
+Write me; and mainly focus on what we want to do in future work.
+We also need a metadata vocab for this, and a mapping of the variables to the URL params using Hydra, and then also a mapping to the results (see [my earlier paper](cite:cites taelman_kcap_2017) ).
+Also formally define how the argument scope $$ A_{scope} $$ is handled during query matching.
+Also mention that the Comunica impl supports extension functions in FSS for extension function pushdown, but these are not formalized yet.
 {:.todo}

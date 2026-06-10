@@ -9,11 +9,10 @@ where $$\mathcal{I}$$, $$\mathcal{B}$$, and $$\mathcal{L}$$ respectively denote 
 Furthermore, $$\mathcal{V}$$ is the infinite set of all variables that is disjoint from $$\mathcal{I}$$, $$\mathcal{B}$$, and $$\mathcal{L}$$.
 A tuple $$tp \in (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I} \cup \mathcal{L})$$ is called a *triple pattern*.
 A finite set of these triple patterns is called a *basic graph pattern* (BGP).
-For the formalization,
-we only consider BGPs since they form the foundational building block of a SPARQL query;
-our implementation incorporates all of SPARQL 1.1.
-The query results of a SPARQL query $$P$$ over a set of RDF triples $$G$$ are called *solution mappings*,
-which are denoted by $$[[P]]_G$$, consisting of partial mappings $$\mu : \mathcal{V} \rightarrow (\mathcal{I} \cup \mathcal{B}\cup \mathcal{L})$$.
+We refer to $$ E $$ as the set of all [algebraic query expressions in SPARQL 1.2](spec:sparqlquery12),
+which includes BGP, but also Join, Minus, Filter, and so on.
+The query results of a SPARQL query $$q$$ over a set of RDF triples $$G$$ are called *solution mappings*,
+which are denoted by $$[[q]]_G$$, consisting of partial mappings $$\mu : \mathcal{V} \rightarrow (\mathcal{I} \cup \mathcal{B}\cup \mathcal{L})$$.
 An RDF triple $$t$$ *matches* a triple pattern $$tp$$ if $$\exists \mu : t = \mu[tp]$$, where $$\mu[tp]$$ is the triple pattern that is obtained by replacing all variables from $$\mu$$ in $$tp$$.
 
 We reuse the definition of [Heling et al.](cite:cites heterogeneous_lars) that defines the language $$ L $$ of an LDF interface.
@@ -30,12 +29,12 @@ Furthermore, we can distinguish LDF *interfaces* (which define the language and 
 from LDF *services* (which are Web servers that implement such an interface).
 The function $$ int (c) = ( l_c , m_c ) $$ can be used to obtain the LDF interface from a given LDF service $$ c $$.
 
-Finally, a *Federation of Linked Data Fragment services* is then defined as a 3-tuple $$ F = (C, int, ep) $$
+Finally, a *Federation of Linked Data Fragment services* is then defined as a 3-tuple $$ f = (C, int, ep) $$
 where $$ C = {c_1, ... , c_n } \subset U $$ , a set of URIs for LDF services,
 $$ int $$, a function that maps an LDF service to its interface,
 and $$ ep $$, a function that maps each LDF service to the RDF dataset available at that service.
 
-Using this notation, our motivating example from [](#example) can be expressed as $$ F_{ex} = ({c_1, c_2 }, int, ep) $$,
+Using this notation, our motivating example from [](#example) can be expressed as $$ f_{ex} = ({c_1, c_2 }, int, ep) $$,
 with $$ c_1 = \text{https://query.wikidata.org/sparql} $$,
 $$ c_2 = \text{http://fragments.dbpedia.org/2016-04/en} $$,
 $$ int(c_1) = (l_{SPARQL12}, m_{SPARQLEP}) $$,
@@ -43,5 +42,7 @@ $$ int(c_2) = (l_{TP}), m_{TPF}) $$,
 $$ ep(c_1) = D_{Wikidata} $$,
 and $$ ep(c_2) = D_{Dbpedia} $$.
 
-Take over definition over query decomposition?
-{:.todo}
+We consider a query decomposition $$ D(q, f) $$ of query $$ q $$ over a federation of LDF services $$ f = (C, int, ep) $$ as
+a rewritten query $$ q^* $$ containing subexpressions,
+where each subexpression $$ q_{sub} $$ can be annotated with a set of services $$ S_i \subseteq C $$
+to indicate that this subexpression is evaluated at the services $$ S_i $$.

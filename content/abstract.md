@@ -13,7 +13,7 @@ As such, there is a need for a mechanism that allows LDF servers to represent th
 so that clients can discover this and use it for query planning, without having to make assumptions on LDF expressivity.
 <!-- Task         -->
 Concretely, this article introduces *Fragment Selector Shapes* (FSSs) to describe LDF server expressiveness.
-These shapes are composed of algebraic SPARQL operator references,
+These shapes are composed of algebraic SPARQL query expression references,
 which can be used to represent expressivity ranging from the full SPARQL language to just single triple patterns.
 <!-- Object       -->
 We show how this language can be used to represent the capabilities of existing LDFs,

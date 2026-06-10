@@ -4,7 +4,7 @@
 One of the most techniques today to publish a Knowledge Graph, is through a [SPARQL endpoint](cite:cites spec:sparqlprot12).
 Despite their popularity, [SPARQL endpoints suffer from availability issues](cite:cites sparqlreadyforaction,monitoringsparql),
 which is partly due to the costly hardware requirements caused by their computational expressivity.
-For this reason, [alternative interfaces](cite:cites tpf,smartkg,sage,wisekg,brtpf,passage) have been introduced over the recent years
+For this reason, [alternative interfaces](cite:cites tpf,smartkg,sage,spf,wisekg,brtpf,passage) have been introduced over the recent years
 to publish Knowledge Graphs.
 In contrast to SPARQL endpoints where clients simply send a SPARQL query to the endpoint and servers carry out all of the effort in query execution,
 these alternative interfaces introduce different trade-offs between server and client effort.
