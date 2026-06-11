@@ -29,7 +29,7 @@ In the notation of $$ e $$, query expressions can be written directly with their
 or they can list their arguments (e.g. $$ tp(s, p, o) $$ for a triple pattern).
 If such an argument is annotated with a star (e.g. $$ s^* $$),
 this means that only concrete RDF terms ($$ \mathcal{I} \cup \mathcal{B} \cup \mathcal{L} $$) can be filled into this position.
-We allow writing $$ \langle e, \emptyset, \emptyset \rangle_e $$ through the shorthand $$ \langle e \rangle_e $$ 
+We allow writing $$ \langle e, \emptyset, \epsilon \rangle_e $$ through the shorthand $$ \langle e \rangle_e $$ 
 
 Finally, $$ fssa $$ refers to a shape that can have a certain arity,
 where the first natural number refers to the minimum required number of occurrences (inclusive),
@@ -84,7 +84,14 @@ Hence, we can express the FSS for smart-KG as $$ fss_{SMARTKG} = fss_{brTPF} \ |
 
 WiseKG, being a combination of both SPF and smart-KG, can be expressed as $$ fss_{WISEKG} = fss_{SPF} \ \mid \ fss_{SMARTKG} $$
 
-Finally, [Passage](cite:cites passage) supports what they call *Core SPARQL*,
+[Passage](cite:cites passage) is an LDF approach supports what they call *Core SPARQL*,
 which includes triple patterns, BGPs, joins, unions, optionals, filters, offsets, and binds.
 Hence, we can express the FSS for Passage as
 $$ fss_{PASSAGE} = \langle tp \rangle_e \lor \langle bgp \rangle_e \lor \langle join \rangle_e \lor \langle union \rangle_e \lor \langle optional \rangle_e \lor \langle filter \rangle_e \lor \langle slice \rangle_e \lor \langle bind \rangle_e $$.
+
+Finally, [Versioned Triple Pattern Fragments (VTPF)](cite:cites vtpf) is an extension to TPF
+that allows triple patterns to be queried in the context of [RDF archives](cite:cites ostrich) across [3 versioned queries types](cite:cites rdfarchives):
+$$ mat(q, v) $$ to execute a query expression $$ q $$ at a given version $$ v $$,
+$$ diff(q, v_1, v_2) $$ to return the difference in results for the query $$ q $$ between versions $$ v_1 $$ and $$ v_2 $$,
+and $$ ver(q) $$ to execute a query $$ q $$ and annotate all results with the versions in which they apply.
+For this, we express the FSS for VTPF as $$ fss_{VTPF} = \langle mat, \emptyset, fss_{TPF} \rangle_e \lor \langle diff, \emptyset, fss_{TPF} \rangle_e \lor \langle ver, \emptyset, fss_{TPF} \rangle_e $$.
