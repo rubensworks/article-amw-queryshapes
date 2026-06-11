@@ -18,6 +18,9 @@ The Linked Data Fragments axis shows the trade-offs between server-side and clie
 </figcaption>
 </figure>
 
+Add URIF and VTPF to axis
+{:.todo}
+
 While each LDF interface comes with its own client-side algorithm to query full SPARQL queries over it,
 federated querying over multiple instances of this LDF interface is only introduced for some.
 [Most federated querying algorithms](cite:cites fedx,hibiscus,splendid) have been designed specifically for only SPARQL endpoints.

@@ -38,7 +38,7 @@ Using this notation, our motivating example from [](#example) can be expressed a
 with $$ c_1 = \text{https://query.wikidata.org/sparql} $$,
 $$ c_2 = \text{http://fragments.dbpedia.org/2016-04/en} $$,
 $$ int(c_1) = (l_{SPARQL12}, m_{SPARQLEP}) $$,
-$$ int(c_2) = (l_{TP}), m_{TPF}) $$,
+$$ int(c_2) = (l_{TP}, m_{TPF}) $$,
 $$ ep(c_1) = D_{Wikidata} $$,
 and $$ ep(c_2) = D_{Dbpedia} $$.
 
