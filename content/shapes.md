@@ -29,6 +29,7 @@ In the notation of $$ e $$, query expressions can be written directly with their
 or they can list their arguments (e.g. $$ tp(s, p, o) $$ for a triple pattern).
 If such an argument is annotated with a star (e.g. $$ s^* $$),
 this means that only concrete RDF terms ($$ \mathcal{I} \cup \mathcal{B} \cup \mathcal{L} $$) can be filled into this position.
+We allow writing $$ \langle e, \emptyset, \emptyset \rangle_e $$ through the shorthand $$ \langle e \rangle_e $$ 
 
 Finally, $$ fssa $$ refers to a shape that can have a certain arity,
 where the first natural number refers to the minimum required number of occurrences (inclusive),
@@ -45,7 +46,7 @@ The evaluation of this a match is important at different places within query opt
 4. If $$ fss $$ is $$ \neg fss_1 $$, then $$ [[q]]^{match}_{fss} = \neg [[q]]^{match}_{fss_1} $$.
 5. If $$ fss $$ is $$ \langle e, A_{scope}, \emptyset \rangle_e $$ and $$ q $$ is $$ e $$, then $$ [[q]]^{match}_{fss} = true $$.
 6. If $$ fss $$ is $$ \langle e, A_{scope}, fss_c^* \rangle_e $$ and $$ q $$ is $$ e $$, then $$ [[q]]^{match}_{fss} = \bigwedge_{e_c \in_{\text{direct child expression}} e} [[e_c]]^{match}_{fss_c} $$.
-7. If $$ fss $$ is $$ \langle fss_c, l, u \rangle_a $$ and $$ q $$ is has the direct child expressions $$ e_1, e_2, \ldots, e_n $$, then $$ [[q]]^{match}_{fss} = l < n \land n \leq u \land [[e_1]]^{match}_{fss_c} \land [[e_2]]^{match}_{fss_c} \land \ldots \land [[e_n]]^{match}_{fss_c}  $$.
+7. If $$ fss $$ is $$ \langle fss_c, l, u \rangle_a $$ and $$ q $$ is has the direct child expressions $$ e_1, e_2, \ldots, e_n $$, then $$ [[q]]^{match}_{fss} = l < n \land n \leq u \land [[e_1]]^{match}_{fss_c} \land [[e_2]]^{match}_{fss_c} \land \ldots \land [[e_n]]^{match}_{fss_c} $$.
 
 Within this definition, we informally consider the arguments in $$ A_{scope} $$ to propagate down into its children.
 This means that if an argument $$ a $$ occurs at any point within an $$ fss $$, and it is matched to a certain RDF term $$ t $$,
@@ -55,10 +56,10 @@ then all of the direct or indirect children of $$ fss $$ that contain this argum
 
 The simplest example of a FSS is for the language $$ l_{SPARQL12} $$ corresponding to a SPARQL 1.2 endpoint;
 $$ fss_{SPARQLEP} = \epsilon $$.
-[SaGe](cite:cites sage) and [Passage](cite:cites passage) also share this language, as they can accept any SPARQL query, and is only limited by execution time.
+[SaGe](cite:cites sage) also shares this language, as it can accept any SPARQL query, and is only limited by execution time.
 
 Another straighforward example is an FSS for the language $$ l_{TP} $$ corresponding to a [Triple Pattern Fragments (TPF) interface](cite:cites tpf);
-$$ fss_{TPF} = \langle tp, \emptyset, \emptyset \rangle_e $$, with $$ tp $$ referring to the algebraic triple pattern expression.
+$$ fss_{TPF} = \langle tp \rangle_e $$, with $$ tp $$ referring to the algebraic triple pattern expression.
 
 As an extension, the FSS for the [Quad Pattern Fragments interface](cite:cites spec:qpf) (an extension of (TPF) with named graph support)
 can be expressed as $$ fss_{QPF} = fss_{TPF} \ | \ \langle graph, \emptyset, fss_{TPF} \rangle_e $$, with $$ graph $$ referring to the algebraic graph query expression.
@@ -81,4 +82,9 @@ Unlike SPF, SmartKG does not requires star patterns,
 but it does not accept variables in the predicate position.
 Hence, we can express the FSS for smart-KG as $$ fss_{SMARTKG} = fss_{brTPF} \ | \ \langle bgp, \emptyset, \langle tp(s, p^*, o), 1, \infty \rangle_a \rangle_e $$.
 
-WiseKG, being a combination of both SPF and smart-KG, can be expressed as $$ fss_{WISEKG} = fss_{SPF} \ \mid \ fss_{SMARTKG} $$ .
+WiseKG, being a combination of both SPF and smart-KG, can be expressed as $$ fss_{WISEKG} = fss_{SPF} \ \mid \ fss_{SMARTKG} $$
+
+Finally, [Passage](cite:cites passage) supports what they call *Core SPARQL*,
+which includes triple patterns, BGPs, joins, unions, optionals, filters, offsets, and binds.
+Hence, we can express the FSS for Passage as
+$$ fss_{PASSAGE} = \langle tp \rangle_e \lor \langle bgp \rangle_e \lor \langle join \rangle_e \lor \langle union \rangle_e \lor \langle optional \rangle_e \lor \langle filter \rangle_e \lor \langle slice \rangle_e \lor \langle bind \rangle_e $$.
