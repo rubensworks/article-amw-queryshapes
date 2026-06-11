@@ -1,0 +1,22 @@
+Function: groupIntoSources
+Input: SPARQL query expression q after exhaustive source assignment
+
+1. IF hasSource(q) || children(q).length == 0
+2.   RETURN q
+
+3. groupedChildren = children(q).map(groupIntoSources)
+4. clusteredChildren = clusterBySource(groupedChildren)
+5. IF clusters.length == 1
+6.   IF matchesFss(q, clusters[0].source.fss)
+7.     unassignSource(children(q))
+8.     RETURN assignSource(q, clusters[0].source)
+
+9 . ELSE IF clusters.length < children(q).length
+10.   qc = []
+11.   FOR cluster of clusters
+12.     IF matchesFss(cluster.q, cluster.source.fss)
+13.       unassignSource(children(cluster.q))
+14.       qc.push(assignSource(cluster.q, cluster.source))
+15.   RETURN q.operation(qc)
+
+10. RETURN q
