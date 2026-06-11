@@ -4,22 +4,12 @@
 One of the most techniques today to publish a Knowledge Graph, is through a [SPARQL endpoint](cite:cites spec:sparqlprot12).
 Despite their popularity, [SPARQL endpoints suffer from availability issues](cite:cites sparqlreadyforaction,monitoringsparql),
 which is partly due to the costly hardware requirements caused by their computational expressivity.
-For this reason, [alternative interfaces](cite:cites tpf,vtpf,smartkg,sage,spf,wisekg,brtpf,passage) have been introduced over the recent years
+For this reason, [alternative interfaces](cite:cites tpf,spec:qpf,vtpf,smartkg,sage,spf,wisekg,brtpf,passage) have been introduced over the recent years
 to publish Knowledge Graphs.
 In contrast to SPARQL endpoints where clients simply send a SPARQL query to the endpoint and servers carry out all of the effort in query execution,
 these alternative interfaces introduce different trade-offs between server and client effort.
 For this reason, these interfaces can be compared to each other using the *Linked Data Fragments* axis as shown in [](#ldf-axis),
 and these interfaces are hence often referred to as Linked Data Fragments (LDFs).
-
-<figure id="ldf-axis">
-<img src="img/ldf.svg" alt="Linked Data Fragments Axis">
-<figcaption markdown="block">
-The Linked Data Fragments axis shows the trade-offs between server-side and client-side effort for SPARQL query execution with different approaches.
-</figcaption>
-</figure>
-
-Add URIF and VTPF to axis
-{:.todo}
 
 While each LDF interface comes with its own client-side algorithm to query full SPARQL queries over it,
 federated querying over multiple instances of this LDF interface is only introduced for some.
@@ -31,6 +21,13 @@ Following that, [FedQPL](cite:cites heterogeneous_fedqpl) was introduced as a fo
 Next, [a more intelligent query decomposition and query planning](cite:cites heterogeneous_lars) was introduced where more than just triple patterns can be assigned to federation members if the interface supports it.
 More recently, [a study was done](cite:cites heterogeneous_sourceselectionfit) to analyze which of the source selection techniques for SPARQL endpoint federation are portable to federation over heterogeneous interfaces.
 Then, [a cost model](cite:cites heterogeneous_costmodel) was introduced that captures resource requirements of query operators for each given federation member.
+
+<figure id="ldf-axis">
+<img src="img/ldf.svg" alt="Linked Data Fragments Axis">
+<figcaption markdown="block">
+The Linked Data Fragments axis shows the trade-offs between server-side and client-side effort for SPARQL query execution with different approaches. The axis contains all LDF interface types that have been studied in literature at the time of writing.
+</figcaption>
+</figure>
 
 What is common among all these works, is that they make the assumption of prior knowledge as to what the expressivity of each federation member is.
 For example, if one federation member is a [TPF server](cite:cites tpf), it is assumed to accept only triple pattern queries,
