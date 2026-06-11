@@ -41,6 +41,9 @@ to describe *Fragment Selector Shapes* (FSSs), which represent the expressivenes
 LDF servers can expose their expressiveness as an FSS,
 which can be used by clients to determine how they should decompose their query,
 without requiring prior knowledge of this LDF interface type.
+In other words, the goal of FSSs is to enable client-side engines to be generic enough
+to not require any specific adapter logic for specific LDF interface types,
+but can decompose their query purely based on the server-provided FSSs.
 While this is the first publication that talks about FSSs,
 they have already been in use for several years within the Comunica query engine (since version 3.0.0, March 2024)
 to enable interface-aware query decomposition.
