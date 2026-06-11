@@ -23,25 +23,25 @@
 % Axis
 %--------------------------------------------------
 
-\draw[very thick,-{Latex[length=4mm]}] (0,0) -- (23,0);
+\draw[very thick,-{Latex[length=4mm]}] (0,0) -- (28,0);
 
 \node[anchor=east] at (0,0.9)
     {\small Low server cost};
 
-\node[anchor=west] at (23,0.9)
+\node[anchor=west] at (28,0.9)
     {\small High server cost};
 
 \node[anchor=east] at (0,-0.9)
     {\small High client cost};
 
-\node[anchor=west] at (23,-0.9)
+\node[anchor=west] at (28,-0.9)
     {\small Low client cost};
 
 %--------------------------------------------------
 % Tick marks
 %--------------------------------------------------
 
-\foreach \x in {1.5,4,6.5,9,11.5,14,16.5,19,21.5}
+\foreach \x in {1.5,4,6.5,9,11.5,14,16.5,19,21.5,24,26.5}
 {
     \draw (\x,0.12) -- (\x,-0.12);
 }
@@ -54,27 +54,33 @@
     {Linked Data\\Documents};
 
 \node[fragment] at (4,1.5)
-    {TPF};
+    {URIF};
 
 \node[fragment] at (6.5,1.5)
-    {brTPF};
+    {TPF/QPF};
 
 \node[fragment] at (9,1.5)
-    {SPF};
+    {VTPF};
 
 \node[fragment] at (11.5,1.5)
-    {WiseKG};
+    {brTPF};
 
 \node[fragment] at (14,1.5)
-    {smart-KG};
+    {SPF};
 
 \node[fragment] at (16.5,1.5)
-    {Passage};
+    {WiseKG};
 
 \node[fragment] at (19,1.5)
-    {SaGe};
+    {smart-KG};
 
 \node[fragment] at (21.5,1.5)
+    {Passage};
+
+\node[fragment] at (24,1.5)
+    {SaGe};
+
+\node[fragment] at (26.5,1.5)
     {SPARQL\\Endpoint};
 
 %--------------------------------------------------
@@ -89,9 +95,9 @@
 %--------------------------------------------------
 
 \draw[thick,-{Latex[length=3mm]}]
-    (4,3.0) -- (22,3.0);
+    (4,3.0) -- (27,3.0);
 
-\node[above] at (13,3.0)
+\node[above] at (15.5,3.0)
     {\small Increasing expressivity and server-side query capability};
 
 \end{tikzpicture}
