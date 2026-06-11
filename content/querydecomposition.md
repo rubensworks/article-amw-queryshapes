@@ -16,6 +16,7 @@ Based on this atomic query decomposition, we perform an *interface-aware groupin
 as described in [](#query-grouping-algorithm)
 This algorithm is generic enough to handle all SPARQL query expressions,
 and tests interface support using $$[[q]]^{match}_{fss}$$ (which corresponds to `matchesFss` in the following pseudocode).
+An implementation of this algorithm can be found in the [`@comunica/actor-optimize-query-operation-group-source actor](https://github.com/comunica/comunica/tree/v5.2.3/packages/actor-optimize-query-operation-group-sources).
 
 <figure id="query-grouping-algorithm" class="listing">
 ````/code/query-grouping-algorithm.txt````
