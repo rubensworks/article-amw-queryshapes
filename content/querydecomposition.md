@@ -18,15 +18,6 @@ This algorithm is generic enough to handle all SPARQL query expressions,
 and tests interface support using $$[[q]]^{match}_{fss}$$ (which corresponds to `matchesFss` in the following pseudocode).
 An implementation of this algorithm can be found in the [`@comunica/actor-optimize-query-operation-group-source` package](https://github.com/comunica/comunica/tree/v5.2.3/packages/actor-optimize-query-operation-group-sources).
 
-<figure id="query-grouping-algorithm" class="listing">
-````/code/query-grouping-algorithm.txt````
-<figcaption markdown="block">
-An algorithm that groups parts of the subquery into federation members (sources).
-It starts from the atomic decomposition
-and groups operations together in an interface-aware manner.
-</figcaption>
-</figure>
-
 This algorithm works in a bottom-up recursive manner,
 which starts with the leaves of the query,
 and tries to group larger and larger parts of the query together if they share a federation member
@@ -44,3 +35,12 @@ If so, we assign the cluster's source to this query expression (line 14).
 Finally (line 15), we instantiate a new query expression (e.g. `UNION` or `JOIN`) with the same type as the original query expression,
 but containing the modified query expressions from the clusters.
 In all other cases (line 16), we return the query expression as-is.
+
+<figure id="query-grouping-algorithm" class="listing">
+````/code/query-grouping-algorithm.txt````
+<figcaption markdown="block">
+An algorithm that groups parts of the subquery into federation members (sources).
+It starts from the atomic decomposition
+and groups operations together in an interface-aware manner.
+</figcaption>
+</figure>

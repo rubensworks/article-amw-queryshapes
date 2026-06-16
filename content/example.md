@@ -19,18 +19,18 @@ As such, the query is to be decomposed in an *interface-aware* manner.
 In this example, Wikidata produces results for $$ tp1 $$, $$ tp2 $$, and $$ tp3 $$,
 while DBpedia produces results for $$ tp3 $$, $$ tp4 $$, and $$ tp5 $$.
 
-Interface-agnostic approaches such as [FedX](cite:cites fedx) would decompose this query
-in such a way that $$ tp1 $$ and $$ tp2 $$ are sent exclusively to Wikidata,
-$$ tp4 $$ and $$ tp5 $$ exclusively to DBpedia,
-and $$ tp3 $$ is sent to both Wikidata and DBpedia before being unioned.
-The result of this source selection phase can be seen in [](#motivating-example-service)
-
 <figure id="motivating-example-service" class="listing">
 ````/code/motivating-example-service.txt````
 <figcaption markdown="block">
 The federated query from [](#motivating-example) after query decomposition with FedX.
 </figcaption>
 </figure>
+
+Interface-agnostic approaches such as [FedX](cite:cites fedx) would decompose this query
+in such a way that $$ tp1 $$ and $$ tp2 $$ are sent exclusively to Wikidata,
+$$ tp4 $$ and $$ tp5 $$ exclusively to DBpedia,
+and $$ tp3 $$ is sent to both Wikidata and DBpedia before being unioned.
+The result of this source selection phase can be seen in [](#motivating-example-service)
 
 Due to FedX being interface-agnostic, the query in [](#motivating-example-service) can not be executed.
 Concretely, the problem is that a join of two triple patterns is being sent to the DBpedia Triple Pattern Fragments interface,
