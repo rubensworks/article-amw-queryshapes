@@ -1,5 +1,5 @@
 Function: groupIntoSources
-Input: SPARQL query expression q after exhaustive source assignment
+Input: SPARQL query expression tree q with leaf expressions annotated with sources
 
 1. IF hasSource(q) || children(q).length == 0
 2.   RETURN q
@@ -19,4 +19,4 @@ Input: SPARQL query expression q after exhaustive source assignment
 14.       qc.push(assignSource(cluster.q, cluster.source))
 15.   RETURN q.operation(qc)
 
-10. RETURN q
+16. RETURN q
