@@ -11,3 +11,12 @@ header {
 pre {
   font-size: 0.7em !important;
 }
+
+// The generic `figure math { display: block }` rule in ceurart.scss turns
+// KaTeX's display-mode MathML into a plain CSS block, which left-aligns the
+// equation content instead of centering it (as the native `block math` default
+// does in screen mode). Revert to the UA default so display equations stay
+// centered in print as well.
+figure .katex-mathml math {
+  display: revert;
+}

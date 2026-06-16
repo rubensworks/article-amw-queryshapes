@@ -78,7 +78,7 @@ fss_{VTPF} & = & \langle mat, \emptyset, fss_{TPF} \rangle_e \lor \langle diff, 
 $$
 
 <figcaption markdown="block">
-The FSSs for all well known LDF interface types.
+The Fragment Selector Shapes for all LDF interface types that have been introduced so far begin related work.
 </figcaption>
 </figure>
 
