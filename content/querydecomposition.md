@@ -3,7 +3,7 @@
 
 [Heling et al.](cite:cites heterogeneous_lars) provide an interface-aware query decomposition algorithm.
 However, this algorithm is limited to only handling triple patterns and BGPs,
-and it does not precisely define interace support for query expressions are tested.
+and it does not precisely define how interace support for query expressions is tested.
 
 Within our query decomposition approach,
 we assume that we start with the atomic query decomposition,
@@ -16,7 +16,7 @@ Based on this atomic query decomposition, we perform an *interface-aware groupin
 as described in [](#query-grouping-algorithm)
 This algorithm is generic enough to handle all SPARQL query expressions,
 and tests interface support using $$[[q]]^{match}_{fss}$$ (which corresponds to `matchesFss` in the following pseudocode).
-An implementation of this algorithm can be found in the [`@comunica/actor-optimize-query-operation-group-source actor](https://github.com/comunica/comunica/tree/v5.2.3/packages/actor-optimize-query-operation-group-sources).
+An implementation of this algorithm can be found in the [`@comunica/actor-optimize-query-operation-group-source` package](https://github.com/comunica/comunica/tree/v5.2.3/packages/actor-optimize-query-operation-group-sources).
 
 <figure id="query-grouping-algorithm" class="listing">
 ````/code/query-grouping-algorithm.txt````
@@ -27,13 +27,13 @@ and groups operations together in an interface-aware manner.
 </figcaption>
 </figure>
 
-This algorithm works in a recursive manner,
+This algorithm works in a bottom-up recursive manner,
 which starts with the leaves of the query,
 and tries to group larger and larger parts of the query together if they share a federation member
-and if that federation member's FSS can handle that query.
+and if that federation member's FSS can handle that subquery.
 Concretely, the algorithm starts (line 1) by checking if the current query expression is already directly annotated with a source
 or has no child expressions, and returns the expression as-is in that case.
-Initially, this will always be the case for triple pattern expressions.
+Initially, this will always be the case for expressions such as triple patterns.
 Next (line 3), we recusively invoke the `groupIntoSources` function for all child expressions.
 Then (line 4), we cluster all of these mapped expressions into clusters, based on their source annotation.
 If we find only one cluster (line 5), we check if the source for this cluster accepts the current query expression (line 6),

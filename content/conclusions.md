@@ -2,7 +2,7 @@
 {:#conclusions}
 
 In this article, we formally introduced the *Fragment Selector Shapes Language*
-as a language for representing the expressivity of acceptable queries to LDF servers.
+as a language for representing the expressivity of acceptable queries to LDF interfaces.
 FSSL allows *Fragment Selector Shapes* to be represented,
 which we used to represent the expressivity of all well known LDF interface types.
 Furthermore, we provide an approach to match a SPARQL query against an FSS.
@@ -10,7 +10,7 @@ We use this matching approach for a query decomposion algorithm that is LDF inte
 
 FSSs have been used within the Comunica query engine since March 2024,
 but this is the first article that formalizes the approach.
-Concretely, FSSs are being used to query over TPF, brTPF, and SPARQL endpoints.
+Concretely, FSSs are practically being used to query over TPF, brTPF, and SPARQL endpoints.
 Passage -- which internally makes use of Comunica -- also offers its own FSS.
 Besides using FSSs for query decomposition,
 Comunica also uses it for other purposes,
@@ -28,7 +28,7 @@ As soon as such a syntax or vocabulary would exist,
 this internal mapping can be removed,
 and get replaced by automatic discovery.
 
-In future work, there is a need to extend the formalization of our query matching definition,
+In future work, there is also a need to extend the formalization of our query matching definition,
 which currently only informally defines how $$ A_{scope} $$ is handled.
 Related to this, we aim to explore the algebraic properties of FSSL.
 Finally, we aim to systematically evaluate the performance of our FSS-based query decomposition approach.

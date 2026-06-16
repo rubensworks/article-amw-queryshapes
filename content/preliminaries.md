@@ -1,18 +1,19 @@
 ## Preliminaries
 {:#preliminaries}
 
-Hereafter, we summarize the semantics of [SPARQL in the context of RDF](cite:cites sparqlsemantics),
+To support the formalization of our FSSL,
+we hereafter summarize the semantics of [SPARQL in the context of RDF](cite:cites sparqlsemantics),
 and include the relevant definitions and notations from [FedQPL](cite:cites heterogeneous_fedqpl) and [Heling et al](cite:cites heterogeneous_lars).
 
-The infinite set of *RDF triples* is formalized as $$ \mathcal{T} = (\mathcal{I} \cup \mathcal{B}) \times \mathcal{I} \times (\mathcal{I} \cup \mathcal{B} \cup \mathcal{L}) $$,
-where $$\mathcal{I}$$, $$\mathcal{B}$$, and $$\mathcal{L}$$ respectively denote the disjoint, infinite sets of *IRIs*, *blank nodes*, and *literals*.
-Furthermore, $$\mathcal{V}$$ is the infinite set of all variables that is disjoint from $$\mathcal{I}$$, $$\mathcal{B}$$, and $$\mathcal{L}$$.
-A tuple $$tp \in (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I} \cup \mathcal{L})$$ is called a *triple pattern*.
+The infinite set of *RDF triples* is formalized as $$ \mathcal{T} = (\mathcal{I} \cup \mathcal{B}) \times \mathcal{I} \times (\mathcal{I} \cup \mathcal{B} \cup \mathcal{L} \cup \mathcal{N}) $$,
+where $$\mathcal{I}$$, $$\mathcal{B}$$, and $$\mathcal{L}$$, and $$\mathcal{N}$$ respectively denote the disjoint, infinite sets of *IRIs*, *blank nodes*, *literals*, and *triple terms*.
+Furthermore, $$\mathcal{V}$$ is the infinite set of all variables that is disjoint from $$\mathcal{I}$$, $$\mathcal{B}$$, $$\mathcal{L}$$, and $$\mathcal{N}$$.
+A tuple $$tp \in (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I} \cup \mathcal{L} \cup \mathcal{N})$$ is called a *triple pattern*.
 A finite set of these triple patterns is called a *basic graph pattern* (BGP).
 We refer to $$ E $$ as the set of all [algebraic query expressions in SPARQL 1.2](spec:sparqlquery12),
 which includes BGP, but also Join, Minus, Filter, and so on.
 The query results of a SPARQL query $$q$$ over a set of RDF triples $$G$$ are called *solution mappings*,
-which are denoted by $$[[q]]_G$$, consisting of partial mappings $$\mu : \mathcal{V} \rightarrow (\mathcal{I} \cup \mathcal{B}\cup \mathcal{L})$$.
+which are denoted by $$[[q]]_G$$, consisting of partial mappings $$\mu : \mathcal{V} \rightarrow (\mathcal{I} \cup \mathcal{B} \cup \mathcal{L} \cup \mathcal{N})$$.
 An RDF triple $$t$$ *matches* a triple pattern $$tp$$ if $$\exists \mu : t = \mu[tp]$$, where $$\mu[tp]$$ is the triple pattern that is obtained by replacing all variables from $$\mu$$ in $$tp$$.
 
 We reuse the definition of [Heling et al.](cite:cites heterogeneous_lars) that defines the language $$ L $$ of an LDF interface.
@@ -21,7 +22,7 @@ We can denote $$ p \in l $$ if $$ p $$ is a SPARQL expression that is part of an
 For example, the language $$ l_{SPARQL12} $$ of a SPARQL endpoint contains all possible [SPARQL 1.2 expressions](cite:cites spec:sparqlquery12),
 and the language $$ l_{TP} $$ of a [TPF interface](cite:cites tpf) contains only triple patterns.
 
-On top of that [Heling et al.](cite:cites heterogeneous_lars) defines
+On top of that [Heling et al.](cite:cites heterogeneous_lars) define
 a Linked Data Fragment interface a 2-tuple $$ f = ( l_f , m_f ) $$,
 where $$ l_f ∈ L $$ is the interface language,
 and $$ m_f : p \rarr G $$ is the interface metadata for an expression $$ p $$.
@@ -34,7 +35,7 @@ where $$ C = {c_1, ... , c_n } \subset U $$ , a set of URIs for LDF services,
 $$ int $$, a function that maps an LDF service to its interface,
 and $$ ep $$, a function that maps each LDF service to the RDF dataset available at that service.
 
-Using this notation, our motivating example from [](#example) can be expressed as $$ f_{ex} = ({c_1, c_2 }, int, ep) $$,
+Using this notation, our motivating example from [](#example) can be expressed as the federation $$ f_{ex} = ({c_1, c_2 }, int, ep) $$,
 with $$ c_1 = \text{https://query.wikidata.org/sparql} $$,
 $$ c_2 = \text{http://fragments.dbpedia.org/2016-04/en} $$,
 $$ int(c_1) = (l_{SPARQL12}, m_{SPARQLEP}) $$,
@@ -42,7 +43,7 @@ $$ int(c_2) = (l_{TP}, m_{TPF}) $$,
 $$ ep(c_1) = D_{Wikidata} $$,
 and $$ ep(c_2) = D_{Dbpedia} $$.
 
-We consider a query decomposition $$ D(q, f) $$ of query $$ q $$ over a federation of LDF services $$ f = (C, int, ep) $$ as
-a rewritten query $$ q^* $$ containing subexpressions,
+We consider a query decomposition $$ D(q, f) = q^* $$ of query $$ q $$ over a federation of LDF services $$ f = (C, int, ep) $$ as
+a rewritten query $$ q^* $$ containing nested query subexpressions,
 where each subexpression $$ q_{sub} $$ can be annotated with a set of services $$ S_i \subseteq C $$
 to indicate that this subexpression is evaluated at the services $$ S_i $$.

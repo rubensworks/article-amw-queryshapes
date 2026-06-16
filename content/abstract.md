@@ -9,22 +9,23 @@ However, these federation techniques make prior assumptions about the expressivi
 and are hardcoded to support only specific LDFs,
 which limits their use for other LDFs that may not be known yet to the client.
 <!-- Need         -->
-As such, there is a need for a mechanism that allows LDF servers to represent their expressiveness in a generic manner,
-so that clients can discover this and use it for query planning, without having to make assumptions on LDF expressivity.
+As such, to enable *assumption-less consumption* of LDFs by client-side query engines,
+there is a need for a mechanism that allows LDF servers to represent their expressivity in a generic manner,
+so that clients can discover and use it for query planning, without having to make assumptions on LDF expressivity.
 <!-- Task         -->
-Concretely, this article introduces *Fragment Selector Shapes* (FSSs) to describe LDF server expressiveness.
+Concretely, this article introduces *Fragment Selector Shapes* (FSSs) to describe LDF server expressivity.
 These shapes are composed of algebraic SPARQL query expression references,
-which can be used to represent expressivity ranging from the full SPARQL language to just single triple patterns.
+which can be used to represent expressivity ranging from single triple patterns to the full SPARQL language.
 <!-- Object       -->
-We show how this language can be used to represent the capabilities of existing LDFs,
+We show how this language can be used to represent the query capabilities of all existing LDFs,
 and how client-side querying techniques can use them during query planning.
 <!-- Findings     -->
 Our implementation experience within the Comunica engine shows that
-this mechanism is effective for handling different LDFs without performance overhead.
+this mechanism is effective for handling different LDFs without significant performance overhead.
 However, more work is needed on systematic performance analyses,
 and we currently lack a syntax to represent FSS in LDF metadata for full discoverability.
 <!-- Conclusion   -->
-In conclusion, FSSs not only generalize query decomposition across existing LDFs,
+In conclusion, FSSs not only generalize query planning across existing LDFs,
 <!-- Perspectives -->
 but they also lower the barrier towards the introduction of new LDFs,
 without necessarily requiring client-side adaptations.

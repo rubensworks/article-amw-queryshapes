@@ -2,12 +2,12 @@
 {:#example}
 
 Hereafter, we introduce a motivating example, which we reuse from [Heling et al](cite:cites heterogeneous_lars).
-Concretely, the federated SPARQL query in [](#motivating-example) retrieves *all American presidents with their political party, including the predecessors and successors*.
+Concretely, the federated SPARQL query in [](#motivating-example) retrieves *all American presidents with their political party, including their predecessors and successors*.
 
 <figure id="motivating-example" class="listing">
 ````/code/motivating-example.txt````
 <figcaption markdown="block">
-A federated SPARQL query over Wikidata and DBpedia to retrieve all American presidents with their political party, including the predecessors and successors.
+A federated SPARQL query over Wikidata and DBpedia to retrieve all American presidents with their political party, including their predecessors and successors.
 </figcaption>
 </figure>
 
@@ -15,7 +15,7 @@ In this example, we assume that we want to execute this SPARQL query over Wikida
 for which we want to use the public [Wikidata SPARQL endpoint](https://query.wikidata.org/sparql){:.mandatory} and the public [DBpedia Triple Pattern Fragments interface](http://fragments.dbpedia.org/2016-04/en){:.mandatory}.
 While the Wikidata SPARQL endpoint accepts full SPARQL queries,
 the DBpedia Triple Pattern Fragments interface only accepts triple pattern queries.
-As such, the query is to be decomposed in an interface-aware manner.
+As such, the query is to be decomposed in an *interface-aware* manner.
 In this example, Wikidata produces results for $$ tp1 $$, $$ tp2 $$, and $$ tp3 $$,
 while DBpedia produces results for $$ tp3 $$, $$ tp4 $$, and $$ tp5 $$.
 
@@ -40,8 +40,10 @@ where $$ tp4 $$ and $$ tp5 $$ are sent separately to DBpedia,
 and their join is executed within the federation engine.
 This is exactly what approaches such as the one from [Heling et al.](cite:cites heterogeneous_lars) can achieve,
 as shown in [](#motivating-example-service-correct).
-While existing query decomposition approaches assume prior knowledge of the language of each interface,
-our contribution focuses on query decomposition based on generic *Fragment Selector Shapes* (FSSs) that are announced by servers.
+While these existing query decomposition approaches assume prior knowledge of the language of each interface,
+our contribution focuses on *assumption-less* query decomposition based on generic *Fragment Selector Shapes* (FSSs) that are announced by interfaces.
+As such, our contribution does not lead to a different decomposition compared to the one in [](#motivating-example-service-correct),
+but it becomes more flexible as to which interfaces can be handled by the query decomposer.
 
 <figure id="motivating-example-service-correct" class="listing">
 ````/code/motivating-example-service-correct.txt````
