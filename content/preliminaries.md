@@ -8,7 +8,7 @@ and include the relevant definitions and notations from [FedQPL](cite:cites hete
 The infinite set of *RDF triples* is formalized as $$ \mathcal{T} = (\mathcal{I} \cup \mathcal{B}) \times \mathcal{I} \times (\mathcal{I} \cup \mathcal{B} \cup \mathcal{L} \cup \mathcal{N}) $$,
 where $$\mathcal{I}$$, $$\mathcal{B}$$, and $$\mathcal{L}$$, and $$\mathcal{N}$$ respectively denote the disjoint, infinite sets of *IRIs*, *blank nodes*, *literals*, and *triple terms*.
 Furthermore, $$\mathcal{V}$$ is the infinite set of all variables that is disjoint from $$\mathcal{I}$$, $$\mathcal{B}$$, $$\mathcal{L}$$, and $$\mathcal{N}$$.
-A tuple $$tp \in (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I} \cup \mathcal{L} \cup \mathcal{N})$$ is called a *triple pattern*.
+A tuple $$tp \in (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I}) \times (\mathcal{V} \cup \mathcal{I} \cup \mathcal{L} \cup \mathcal{N}')$$ is called a *triple pattern* (with $$\mathcal{N}'$$ being triple terms containing variables).
 A finite set of these triple patterns is called a *basic graph pattern* (BGP).
 We refer to $$ E $$ as the set of all [algebraic query expressions in SPARQL 1.2](spec:sparqlquery12),
 which includes BGP, but also Join, Minus, Filter, and so on.

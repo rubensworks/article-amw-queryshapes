@@ -30,7 +30,7 @@ Interface-agnostic approaches such as [FedX](cite:cites fedx) would decompose th
 in such a way that $$ tp1 $$ and $$ tp2 $$ are sent exclusively to Wikidata,
 $$ tp4 $$ and $$ tp5 $$ exclusively to DBpedia,
 and $$ tp3 $$ is sent to both Wikidata and DBpedia before being unioned.
-The result of this source selection phase can be seen in [](#motivating-example-service)
+The result of this source selection phase can be seen in [](#motivating-example-service).
 
 Due to FedX being interface-agnostic, the query in [](#motivating-example-service) can not be executed.
 Concretely, the problem is that a join of two triple patterns is being sent to the DBpedia Triple Pattern Fragments interface,
